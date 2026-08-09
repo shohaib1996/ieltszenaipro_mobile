@@ -1,56 +1,50 @@
-# Welcome to your Expo app 👋
+# IELTSZen AI — Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Student-facing React Native/Expo app for IELTS practice (Reading, Listening, Writing,
+Speaking) with AI-graded results. Talks to the existing `ai-mock-interview-backend` API —
+no separate backend for this app.
 
-## Get started
+## Stack
 
-1. Install dependencies
+- Expo (managed workflow) + Expo Router (file-based routing)
+- NativeWind v4 (Tailwind for React Native)
+- Redux Toolkit + RTK Query, axios-based `baseQuery` (mirrors the web app's `src/redux/api`)
+- `expo-secure-store` for the JWT (Keychain/Keystore, not AsyncStorage)
+- `expo-audio` (Listening playback, Speaking recording) + `expo-speech` (examiner TTS)
 
-   ```bash
-   npm install
-   ```
+## Getting started
 
-2. Start the app
+1. Start the backend first (`ai-mock-interview-backend`, `npm run dev`, default port 5000).
+2. Copy `.env.example` to `.env` and point `EXPO_PUBLIC_API_URL` at the backend:
+   - Simulator/emulator on the same machine: `http://localhost:5000/api/v1` (Android
+     emulator specifically needs `http://10.0.2.2:5000/api/v1`).
+   - Physical device: use your computer's LAN IP, e.g. `http://192.168.1.23:5000/api/v1`.
+3. `npm install`
+4. `npm run start` (or `npm run android` / `npm run ios` / `npm run web`)
 
-   ```bash
-   npx expo start
-   ```
+## Structure
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+src/
+  app/            Expo Router screens: (auth) group, (app) group (tab shell + module flows)
+  components/ui/  Themed primitives (Button, Card, Input, BandScore, ...) encoding the
+                  brand's contrast rules so they can't be misused
+  components/test/  Shared Reading/Listening/Speaking pieces (question renderer, audio
+                  player, chat bubble)
+  redux/          Store, RTK Query API slices (one per backend module), auth/settings slices
+  hooks/          useCountdown, useExamTts, useSpeechRecorder, useAuthBootstrap
+  types/          Response/domain types mirroring the backend's actual JSON shapes
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Known gaps before store submission
 
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- App icon/splash are still Expo's default placeholder assets — swap
+  `assets/images/icon.png`, `android-icon-*.png`, `splash-icon.png`, `favicon.png` for real
+  branded artwork.
+- Speaking's cloud transcription depends on a small backend addition
+  (`POST /speaking-tests/:sessionId/transcribe`) that ships alongside this app.
+- No "forgot password" self-serve flow — the backend only has an authenticated
+  change-password endpoint, so the app is honest about that rather than faking a flow.
+- See `mobileappplan.txt` (in the `ai-mock-interview-client` repo) for the full App
+  Store / Play Store prerequisites and timeline (developer accounts, Google's closed-testing
+  requirement, privacy policy, etc.) — those are process steps, not code.
