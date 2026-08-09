@@ -43,7 +43,8 @@
         {
           "microphonePermission": "IELTSZen AI uses your microphone to record your answers during Speaking practice tests."
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,
