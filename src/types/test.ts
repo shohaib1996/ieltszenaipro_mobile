@@ -33,8 +33,22 @@ export interface ReadingTest {
 
 export interface TestSession {
   id: string;
+  userId?: string;
   type: string;
   startedAt: string;
   endedAt: string | null;
   score: number | null;
+  transcript?: string | null;
+  feedback?: string | Record<string, unknown> | null;
+  aiChatConversations?: {
+    id: string;
+    sessionId: string;
+    conversation: {
+      role: 'user' | 'assistant';
+      content: string;
+      part?: number;
+    }[];
+    createdAt: string;
+  }[];
+  writingSubmissions?: unknown[];
 }

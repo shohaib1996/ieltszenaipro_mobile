@@ -6,6 +6,7 @@ export const tagTypes = {
   ListeningTest: 'ListeningTest',
   WritingTest: 'WritingTest',
   SpeakingTest: 'SpeakingTest',
+  Answer: 'Answer',
 } as const;
 
 export const tagTypesList = Object.values(tagTypes);

@@ -159,7 +159,8 @@ export default function SpeakingSessionScreen() {
       if (phase === 'part1') await handlePart1Answer(transcript);
       else if (phase === 'part2-followup') await handlePart2FollowUpAnswer(transcript);
       else if (phase === 'part3') await handlePart3Answer(transcript);
-    } catch {
+    } catch (err) {
+      console.error('Transcription failed:', JSON.stringify(err));
       Alert.alert('Transcription failed', "Couldn't understand that recording. Please try again.");
     } finally {
       setIsTranscribing(false);
