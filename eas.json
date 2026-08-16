@@ -6,16 +6,28 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://linguaai-h10x.onrender.com/api/v1",
+        "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "770240164316-s079u27nrfgsudg3fsc4jhllfkgf542l.apps.googleusercontent.com"
+      }
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://linguaai-h10x.onrender.com/api/v1",
+        "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "770240164316-s079u27nrfgsudg3fsc4jhllfkgf542l.apps.googleusercontent.com"
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://linguaai-h10x.onrender.com/api/v1",
+        "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "770240164316-s079u27nrfgsudg3fsc4jhllfkgf542l.apps.googleusercontent.com"
+      }
     }
   },
   "submit": {
