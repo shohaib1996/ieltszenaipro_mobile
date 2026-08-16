@@ -88,7 +88,12 @@ export default function LoginScreen() {
   };
 
   const [googleRequest, googleResponse, promptGoogleAsync] = Google.useIdTokenAuthRequest({
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    // Google rejects custom-scheme redirect URIs for 'WEB' clients, so Android must
+    // authenticate through its own Android-type client (validated via package name +
+    // keystore SHA-1 instead of a redirect URI). Its id_token is audienced to
+    // androidClientId, not webClientId - the backend accepts both.
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
   });
 
   useEffect(() => {
