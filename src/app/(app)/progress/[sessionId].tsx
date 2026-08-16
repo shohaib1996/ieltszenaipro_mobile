@@ -1,12 +1,13 @@
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { format } from 'date-fns';
-import { ArrowLeft, BookOpenCheck, CheckCircle, Headphones, Mic, PenTool, XCircle } from 'lucide-react-native';
+import { ArrowLeft, BookOpenCheck, CheckCircle, XCircle } from 'lucide-react-native';
 
 import { BandScore } from '@/components/ui/BandScore';
 import { Card } from '@/components/ui/Card';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Screen } from '@/components/ui/Screen';
+import { getSkillMeta } from '@/lib/skills';
 import { useGetAllAnswersQuery } from '@/redux/api/answerApi';
 import { useGetListeningTestQuery } from '@/redux/api/listeningTestApi';
 import { useGetReadingTestQuery } from '@/redux/api/readingTestApi';
@@ -17,13 +18,6 @@ import type { TestAnswer } from '@/types/answer';
 import type { TestQuestion } from '@/types/test';
 import type { SpeakingCriteriaScores } from '@/types/speaking';
 import type { WritingCriteriaScores, WritingTaskPayload } from '@/types/writing';
-
-const SKILL_META = {
-  IELTS_READING: { label: 'Reading', icon: BookOpenCheck },
-  IELTS_LISTENING: { label: 'Listening', icon: Headphones },
-  IELTS_WRITING: { label: 'Writing', icon: PenTool },
-  IELTS_SPEAKING: { label: 'Speaking', icon: Mic },
-} as const;
 
 const CRITERIA_LABELS: Record<string, string> = {
   taskScore: 'Task response',
@@ -167,7 +161,7 @@ export default function ProgressDetailScreen() {
     );
   }
 
-  const meta = SKILL_META[session.type as keyof typeof SKILL_META] ?? { label: session.type, icon: BookOpenCheck };
+  const meta = getSkillMeta(session.type) ?? { label: session.type, icon: BookOpenCheck };
   const Icon = meta.icon;
   const answersByQuestion = (answersData?.data ?? []).reduce<Record<string, TestAnswer>>((acc, answer) => {
     acc[answer.questionId] = answer;
