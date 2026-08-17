@@ -9,8 +9,7 @@
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://linguaai-h10x.onrender.com/api/v1",
-        "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "770240164316-s079u27nrfgsudg3fsc4jhllfkgf542l.apps.googleusercontent.com",
-        "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID": "770240164316-3uhi5skebdg1mq9akpvfpfjsancd4vg7.apps.googleusercontent.com"
+        "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "770240164316-s079u27nrfgsudg3fsc4jhllfkgf542l.apps.googleusercontent.com"
       }
     },
     "preview": {
@@ -20,16 +19,14 @@
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://linguaai-h10x.onrender.com/api/v1",
-        "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "770240164316-s079u27nrfgsudg3fsc4jhllfkgf542l.apps.googleusercontent.com",
-        "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID": "770240164316-3uhi5skebdg1mq9akpvfpfjsancd4vg7.apps.googleusercontent.com"
+        "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "770240164316-s079u27nrfgsudg3fsc4jhllfkgf542l.apps.googleusercontent.com"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_URL": "https://linguaai-h10x.onrender.com/api/v1",
-        "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "770240164316-s079u27nrfgsudg3fsc4jhllfkgf542l.apps.googleusercontent.com",
-        "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID": "770240164316-3uhi5skebdg1mq9akpvfpfjsancd4vg7.apps.googleusercontent.com"
+        "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "770240164316-s079u27nrfgsudg3fsc4jhllfkgf542l.apps.googleusercontent.com"
       }
     }
   },

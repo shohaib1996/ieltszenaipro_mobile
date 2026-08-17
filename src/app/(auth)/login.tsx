@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { Link } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import Svg, { Path } from 'react-native-svg';
 
 import { Screen } from '@/components/ui/Screen';
@@ -17,9 +21,12 @@ import { login } from '@/redux/features/authSlice';
 import { secureStorage } from '@/lib/secureStorage';
 import type { IUser } from '@/redux/features/authSlice';
 
-// Required by expo-auth-session so the in-app browser closes itself and returns
-// control to the app once Google redirects back with the result.
-WebBrowser.maybeCompleteAuthSession();
+// Google validates the app natively via package name + keystore SHA-1 (no redirect URI
+// involved, unlike the deprecated expo-auth-session browser flow). webClientId here makes
+// the returned idToken audienced to the Web client, matching what the backend verifies.
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+});
 
 const schema = z.object({
   email: z.string().email('Enter a valid email address'),
@@ -55,6 +62,7 @@ export default function LoginScreen() {
   const [loginUser, { isLoading }] = useLoginUserMutation();
   const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleLoginMutation();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isGoogleSigningIn, setIsGoogleSigningIn] = useState(false);
 
   const {
     control,
@@ -87,36 +95,34 @@ export default function LoginScreen() {
     }
   };
 
-  const [googleRequest, googleResponse, promptGoogleAsync] = Google.useIdTokenAuthRequest({
-    // Google rejects custom-scheme redirect URIs for 'WEB' clients, so Android must
-    // authenticate through its own Android-type client (validated via package name +
-    // keystore SHA-1 instead of a redirect URI). Its id_token is audienced to
-    // androidClientId, not webClientId - the backend accepts both.
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-  });
+  const onGooglePress = async () => {
+    setServerError(null);
+    setIsGoogleSigningIn(true);
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+      if (!isSuccessResponse(response)) return; // user cancelled
 
-  useEffect(() => {
-    if (googleResponse?.type !== 'success') return;
-    const idToken = googleResponse.params.id_token;
-    if (!idToken) return;
-
-    (async () => {
-      setServerError(null);
-      try {
-        // The backend finds-or-creates by the token's verified email: an existing
-        // account signs straight in, a new one is created and signed in - same
-        // single endpoint either way, no separate "sign up with Google" step.
-        const res = await googleLogin({ idToken }).unwrap();
-        await persistAndLogin(res.data.accessToken, res.data.user);
-      } catch (err) {
-        const message =
-          (err as { data?: { message?: string } })?.data?.message ?? 'Google sign-in failed';
-        setServerError(message);
+      const idToken = response.data.idToken;
+      if (!idToken) {
+        setServerError('Google sign-in failed');
+        return;
       }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [googleResponse]);
+
+      // The backend finds-or-creates by the token's verified email: an existing
+      // account signs straight in, a new one is created and signed in - same
+      // single endpoint either way, no separate "sign up with Google" step.
+      const res = await googleLogin({ idToken }).unwrap();
+      await persistAndLogin(res.data.accessToken, res.data.user);
+    } catch (err) {
+      if (isErrorWithCode(err) && err.code === statusCodes.IN_PROGRESS) return;
+      const message =
+        (err as { data?: { message?: string } })?.data?.message ?? 'Google sign-in failed';
+      setServerError(message);
+    } finally {
+      setIsGoogleSigningIn(false);
+    }
+  };
 
   return (
     <Screen scroll className="px-6">
@@ -133,9 +139,8 @@ export default function LoginScreen() {
           variant="secondary"
           fullWidth
           icon={<GoogleIcon />}
-          loading={isGoogleLoading}
-          disabled={!googleRequest}
-          onPress={() => promptGoogleAsync()}
+          loading={isGoogleLoading || isGoogleSigningIn}
+          onPress={onGooglePress}
         >
           Continue with Google
         </Button>
