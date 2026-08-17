@@ -4,6 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { LogOut, Moon, Smartphone, Sun } from 'lucide-react-native';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import { Screen } from '@/components/ui/Screen';
 import { Card } from '@/components/ui/Card';
@@ -64,6 +65,13 @@ export default function SettingsScreen() {
   };
 
   const handleLogout = async () => {
+    // Play Services otherwise keeps considering the user "signed in" for this app,
+    // silently reusing that account on the next login instead of showing the picker.
+    try {
+      await GoogleSignin.signOut();
+    } catch {
+      // Not signed in via Google, or Play Services unavailable - fine either way.
+    }
     await secureStorage.clearSession();
     dispatch(logout());
   };
